@@ -12,6 +12,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring.version>3.2.4.RELEASE</spring.version>
     <slf4j.version>1.6.1</slf4j.version>
+    <querydsl.version>2.8.0</querydsl.version>
   </properties>
 
   <dependencies>
@@ -164,5 +165,67 @@
 			<version>1.2</version>
 		</dependency>
         
+        <!--  querydsl dependencies -->
+        <dependency>
+		  <groupId>com.mysema.querydsl</groupId>
+		  <artifactId>querydsl-apt</artifactId>
+		  <version>${querydsl.version}</version>
+		  <scope>provided</scope>
+		</dependency>    
+        <dependency>
+		  <groupId>com.mysema.querydsl</groupId>
+		  <artifactId>querydsl-jpa</artifactId>
+		  <version>${querydsl.version}</version>
+		</dependency>
   </dependencies>
+  
+  <build>
+    <finalName>spring-function-example</finalName>
+    <plugins>
+        <plugin>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>2.3.2</version>
+			<configuration>
+				<source>1.6</source>
+				<target>1.6</target>
+			</configuration>
+		</plugin>
+		<!--  test plugin -->
+		<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.16</version>
+				<configuration>
+					<includes>
+						<include>**/*Tests.java</include>
+					</includes>
+					<argLine>-Xmx256M</argLine>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit47</artifactId>
+						<version>2.16</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+	    <plugin>
+	      <groupId>com.mysema.maven</groupId>
+	      <artifactId>apt-maven-plugin</artifactId>
+	      <version>1.0.9</version>
+	      <executions>
+	        <execution>
+	          <goals>
+	            <goal>process</goal>
+	          </goals>
+	          <phase>generate-sources</phase>
+	          <configuration>
+	            <outputDirectory>target/generated-sources/java</outputDirectory>
+                <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+	          </configuration>
+	        </execution>
+	      </executions>
+	    </plugin>
+     </plugins>
+  </build>
 </project>

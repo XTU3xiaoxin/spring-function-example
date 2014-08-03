@@ -5,8 +5,6 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +12,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.mysema.query.types.Predicate;
 import com.tja.config.ApplicationConfig;
 import com.tja.domain.Address;
 import com.tja.domain.Customer;
 import com.tja.domain.EmailAddress;
+import com.tja.domain.QCustomer;
 import com.tja.repository.CustomerRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,6 +33,7 @@ public class CustomerRepositoryTests {
 	
 	@Test
 	public void saveAndFindCustomerByEmailAddress() {
+	   
 		Customer customer = new Customer();
 		customer.setFirstName("xia1-test");
 		customer.setLastName("tang");
@@ -51,16 +52,26 @@ public class CustomerRepositoryTests {
 		
 		customer.setAddresses(addresses);
 		
-		Customer result = customerRepository.save(customer);
-		Assert.assertNotNull(result.getId());
-				
-		Customer c = customerRepository.findByEmailAddress(emailAddress);
-		Assert.assertEquals(c.getFirstName(), "xia1-test");
-		
-		Customer c2 = customerRepository.findByFullName("xia1-test", "tang");
-		Assert.assertNotNull(c2);
-		
-		//clear
-		customerRepository.delete(c);
+		try {
+			Customer result = customerRepository.save(customer);
+			Assert.assertNotNull(result.getId());
+					
+			Customer c = customerRepository.findByEmailAddress(emailAddress);
+			Assert.assertEquals(c.getFirstName(), "xia1-test");
+			
+			Customer c2 = customerRepository.findByFullName("xia1-test", "tang");
+			Assert.assertNotNull(c2);
+			
+			QCustomer $ = QCustomer.customer;
+			Predicate predicate = $.emailAddress.email.startsWith("xiao0-test");
+			Customer c3 = customerRepository.findOne(predicate);
+			Assert.assertNotNull(c3);
+			Assert.assertEquals(c3.getFirstName(), "xia1-test");
+		}finally {
+			Customer result = customerRepository.findByEmailAddress(emailAddress);
+			if(null != result) {
+				customerRepository.delete(result);
+			}
+		}
 	}
 }

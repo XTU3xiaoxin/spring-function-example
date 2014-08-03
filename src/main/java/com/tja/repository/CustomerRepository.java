@@ -2,7 +2,7 @@ package com.tja.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 import com.tja.domain.Customer;
 import com.tja.domain.EmailAddress;
@@ -13,7 +13,7 @@ import com.tja.domain.EmailAddress;
  * @author Thinkpad
  *
  */
-public interface CustomerRepository extends JpaRepository<Customer, Long>{
+public interface CustomerRepository extends JpaRepository<Customer, Long>,QueryDslPredicateExecutor<Customer>{
 
 	@Query("SELECT c FROM Customer c where c.firstName=?1 and c.lastName=?2")
 	Customer findByFullName(String firstName,String lastName);
